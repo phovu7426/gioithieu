@@ -272,6 +272,7 @@
 </template>
 
 <script setup>
+import { onMounted, watch } from 'vue'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
 
@@ -300,6 +301,20 @@ const isLoading = ref(false)
 const isLoggingOut = ref(false)
 
 const authStore = useAuthStore()
+
+// Xóa selected_group_id khi vào trang đăng nhập và chưa đăng nhập
+onMounted(() => {
+  if (process.client && !authStore.isAuthenticated) {
+    localStorage.removeItem('selected_group_id')
+  }
+})
+
+// Theo dõi khi isAuthenticated thay đổi thành false (logout, token hết hạn, etc.)
+watch(() => authStore.isAuthenticated, (isAuthenticated) => {
+  if (process.client && !isAuthenticated) {
+    localStorage.removeItem('selected_group_id')
+  }
+})
 
 // Computed: Lấy chữ cái đầu tiên của tên user để hiển thị avatar
 const getUserInitial = computed(() => {
