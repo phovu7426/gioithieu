@@ -22,26 +22,26 @@ export function useUserNavigation(): UserNavigationResult {
     },
     {
       name: 'Giới thiệu',
-      path: '/about',
+      path: '/home/about',
       api: 'api/about-sections',
       icon: 'ℹ️',
       status: 'active',
       children: [
         {
           name: 'Về chúng tôi',
-          path: '/about',
+          path: '/home/about',
           icon: '🏢',
           status: 'active'
         },
         {
           name: 'Đội ngũ',
-          path: '/staff',
+          path: '/home/staff',
           icon: '👥',
           status: 'active'
         },
         {
           name: 'Chứng chỉ',
-          path: '/certificates',
+          path: '/home/certificates',
           icon: '🏆',
           status: 'active'
         }
@@ -49,35 +49,35 @@ export function useUserNavigation(): UserNavigationResult {
     },
     {
       name: 'Dự án',
-      path: '/projects',
+      path: '/home/projects',
       api: 'api/projects',
       icon: '🏗️',
       status: 'active'
     },
     {
       name: 'Dịch vụ',
-      path: '/services',
+      path: '/home/services',
       api: '',
       icon: '🛠️',
       status: 'active'
     },
     {
       name: 'Thư viện',
-      path: '/gallery',
+      path: '/home/gallery',
       api: 'api/gallery',
       icon: '📸',
       status: 'active'
     },
     {
       name: 'FAQ',
-      path: '/faqs',
+      path: '/home/faqs',
       api: 'api/faqs',
       icon: '❓',
       status: 'active'
     },
     {
       name: 'Liên hệ',
-      path: '/contact',
+      path: '/home/contact',
       api: 'api/contact',
       icon: '📞',
       status: 'active'

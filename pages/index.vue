@@ -1,32 +1,16 @@
 <template>
   <div class="homepage">
-    <!-- Hero Section -->
-    <section class="hero-section relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white">
-      <div class="absolute inset-0 bg-black/20"></div>
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
-        <div class="text-center">
-          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            {{ heroData.title || 'Xây Dựng Tương Lai Bền Vững' }}
-          </h1>
-          <p class="text-xl sm:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-            {{ heroData.subtitle || 'Chuyên nghiệp - Chất lượng - Uy tín' }}
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <NuxtLink
-              to="/projects"
-              class="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition-all transform hover:scale-105"
-            >
-              Xem Dự Án
-            </NuxtLink>
-            <NuxtLink
-              to="/contact"
-              class="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105"
-            >
-              Liên Hệ Ngay
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
+    <!-- Hero Section / Banner từ API -->
+    <section class="hero-section">
+      <BannerSlider
+        location-code="home_slider"
+        :autoplay="true"
+        :interval="5000"
+        :show-arrows="true"
+        :show-indicators="true"
+        height-class="h-[500px] md:h-[600px]"
+        container-class="rounded-none"
+      />
     </section>
 
     <!-- About Section -->
@@ -51,7 +35,7 @@
             <div class="text-gray-600 line-clamp-3" v-html="section.content"></div>
             <NuxtLink
               v-if="section.slug"
-              :to="`/about/${section.slug}`"
+              :to="`/home/about`"
               class="mt-4 inline-block text-blue-600 hover:text-blue-700 font-medium"
             >
               Đọc thêm →
@@ -75,14 +59,20 @@
             v-for="project in featuredProjects"
             :key="project.id"
             class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow cursor-pointer"
-            @click="goToProject(project.slug)"
+            @click="goToProject(project.slug || project.id)"
           >
-            <div class="relative h-64 overflow-hidden">
+            <div class="relative h-64 overflow-hidden bg-gray-100">
               <img
-                :src="project.cover_image || '/default.svg'"
-                :alt="project.name"
+                v-if="project.image || project.cover_image"
+                :src="project.image || project.cover_image || '/default.svg'"
+                :alt="project.title || project.name"
                 class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
               />
+              <div v-else class="w-full h-full flex items-center justify-center bg-gray-200">
+                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+              </div>
               <div v-if="project.status" class="absolute top-4 right-4">
                 <span
                   :class="getStatusClass(project.status)"
@@ -91,10 +81,15 @@
                   {{ getStatusLabel(project.status) }}
                 </span>
               </div>
+              <div v-if="project.featured" class="absolute top-4 left-4 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                Nổi bật
+              </div>
             </div>
             <div class="p-6">
-              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ project.name }}</h3>
-              <p class="text-gray-600 mb-4 line-clamp-2">{{ project.short_description }}</p>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ project.title || project.name }}</h3>
+              <p v-if="project.short_description || project.description" class="text-gray-600 mb-4 line-clamp-2">
+                {{ project.short_description || project.description }}
+              </p>
               <div class="flex items-center justify-between text-sm text-gray-500">
                 <span v-if="project.location">
                   <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,7 +105,7 @@
         </div>
         <div class="text-center mt-12">
           <NuxtLink
-            to="/projects"
+            to="/home/projects"
             class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
           >
             Xem Tất Cả Dự Án
@@ -279,7 +274,7 @@
         </div>
         <div class="text-center mt-8">
           <NuxtLink
-            to="/faqs"
+            to="/home/faqs"
             class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
           >
             Xem Tất Cả Câu Hỏi
@@ -299,7 +294,7 @@
           Liên hệ với chúng tôi ngay hôm nay để được tư vấn miễn phí
         </p>
         <NuxtLink
-          to="/contact"
+          to="/home/contact"
           class="inline-flex items-center px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition-all transform hover:scale-105"
         >
           Liên Hệ Ngay
@@ -317,6 +312,7 @@ import { publicEndpoints } from '@/api/endpoints'
 import { useSeo } from '@/composables/seo'
 import { useGlobalSystemConfig } from '~/composables/system-config'
 import { getProjectStatusLabel, getProjectStatusColor } from '@/shared/enums'
+import BannerSlider from '@/components/Public/Banners/BannerSlider.vue'
 
 definePageMeta({
   layout: 'home'
@@ -335,7 +331,6 @@ useSeo({
 })
 
 // State
-const heroData = ref({ title: '', subtitle: '' })
 const featuredProjects = ref<any[]>([])
 const aboutSections = ref<any[]>([])
 const featuredTestimonials = ref<any[]>([])
@@ -369,71 +364,102 @@ onMounted(async () => {
 async function loadFeaturedProjects() {
   try {
     const response = await apiClient.get(publicEndpoints.projects.featured, { params: { limit: 6 } })
-    if (response.data?.data) {
-      featuredProjects.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    if (response.data?.success && response.data?.data) {
+      featuredProjects.value = Array.isArray(response.data.data) ? response.data.data : []
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      featuredProjects.value = response.data.data
+    } else if (Array.isArray(response.data)) {
+      featuredProjects.value = response.data
     }
   } catch (error) {
     console.error('Failed to load featured projects:', error)
+    featuredProjects.value = []
   }
 }
 
 async function loadAboutSections() {
   try {
     const response = await apiClient.get(publicEndpoints.aboutSections.list, { params: { limit: 3, status: 'active' } })
-    if (response.data?.data) {
-      aboutSections.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    if (response.data?.success && response.data?.data) {
+      aboutSections.value = Array.isArray(response.data.data) ? response.data.data : []
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      aboutSections.value = response.data.data
+    } else if (Array.isArray(response.data)) {
+      aboutSections.value = response.data
     }
   } catch (error) {
     console.error('Failed to load about sections:', error)
+    aboutSections.value = []
   }
 }
 
 async function loadFeaturedTestimonials() {
   try {
     const response = await apiClient.get(publicEndpoints.testimonials.featured, { params: { limit: 6 } })
-    if (response.data?.data) {
-      featuredTestimonials.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    if (response.data?.success && response.data?.data) {
+      featuredTestimonials.value = Array.isArray(response.data.data) ? response.data.data : []
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      featuredTestimonials.value = response.data.data
+    } else if (Array.isArray(response.data)) {
+      featuredTestimonials.value = response.data
     }
   } catch (error) {
     console.error('Failed to load featured testimonials:', error)
+    featuredTestimonials.value = []
   }
 }
 
 async function loadPartners() {
   try {
     const response = await apiClient.get(publicEndpoints.partners.list, { params: { limit: 12, status: 'active' } })
-    if (response.data?.data) {
-      partners.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    if (response.data?.success && response.data?.data) {
+      partners.value = Array.isArray(response.data.data) ? response.data.data : []
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      partners.value = response.data.data
+    } else if (Array.isArray(response.data)) {
+      partners.value = response.data
     }
   } catch (error) {
     console.error('Failed to load partners:', error)
+    partners.value = []
   }
 }
 
 async function loadCertificates() {
   try {
     const response = await apiClient.get(publicEndpoints.certificates.list, { params: { limit: 8, status: 'active' } })
-    if (response.data?.data) {
-      certificates.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    if (response.data?.success && response.data?.data) {
+      certificates.value = Array.isArray(response.data.data) ? response.data.data : []
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      certificates.value = response.data.data
+    } else if (Array.isArray(response.data)) {
+      certificates.value = response.data
     }
   } catch (error) {
     console.error('Failed to load certificates:', error)
+    certificates.value = []
   }
 }
 
 async function loadPopularFaqs() {
   try {
     const response = await apiClient.get(publicEndpoints.faqs.popular, { params: { limit: 5 } })
-    if (response.data?.data) {
-      popularFaqs.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    if (response.data?.success && response.data?.data) {
+      popularFaqs.value = Array.isArray(response.data.data) ? response.data.data : []
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      popularFaqs.value = response.data.data
+    } else if (Array.isArray(response.data)) {
+      popularFaqs.value = response.data
     }
   } catch (error) {
     console.error('Failed to load popular FAQs:', error)
+    popularFaqs.value = []
   }
 }
 
-function goToProject(slug: string) {
-  router.push(`/projects/${slug}`)
+function goToProject(slugOrId: string | number) {
+  if (!slugOrId) return
+  router.push(`/home/projects/${slugOrId}`)
 }
 
 function toggleFaq(id: string | number) {
