@@ -75,67 +75,103 @@
     </section>
 
     <!-- Featured Projects -->
-    <section v-if="featuredProjects.length > 0" class="py-16 bg-gray-50">
+    <section v-if="featuredProjects.length > 0" class="relative py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Dự Án Nổi Bật</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Khám phá những dự án thành công của chúng tôi
+        <!-- Title Section -->
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Dự Án Trọng Điểm
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+            Khám phá những dự án thành công và nổi bật của chúng tôi
           </p>
         </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <!-- Projects Grid - Chỉ hiển thị 3 dự án đầu tiên -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
           <div
-            v-for="project in featuredProjects"
+            v-for="project in featuredProjects.slice(0, 3)"
             :key="project.id"
-            class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow cursor-pointer"
+            class="group relative bg-white rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer"
             @click="goToProject(project.slug || project.id)"
           >
-            <div class="relative h-64 overflow-hidden bg-gray-100">
+            <!-- Image Container -->
+            <div class="relative h-80 overflow-hidden">
               <img
                 v-if="project.cover_image"
-                :src="project.cover_image || '/default.svg'"
+                :src="project.cover_image"
                 :alt="project.name"
-                class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
-              <div v-else class="w-full h-full flex items-center justify-center bg-gray-200">
-                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600">
+                <svg class="w-24 h-24 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
               </div>
-              <div v-if="project.status" class="absolute top-4 right-4">
+              
+              <!-- Overlay gradient -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <!-- Status Badge -->
+              <div v-if="project.status" class="absolute top-4 right-4 z-10">
                 <span
                   :class="getStatusClass(project.status)"
-                  class="px-3 py-1 rounded-full text-sm font-semibold"
+                  class="px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur-sm shadow-lg"
                 >
                   {{ getStatusLabel(project.status) }}
                 </span>
               </div>
-              <div v-if="project.featured" class="absolute top-4 left-4 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                Nổi bật
+              
+              <!-- Featured Badge -->
+              <div v-if="project.featured" class="absolute top-4 left-4 z-10 bg-yellow-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                ⭐ Nổi Bật
               </div>
             </div>
-            <div class="p-6">
-              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ project.name }}</h3>
-              <p v-if="project.short_description || project.description" class="text-gray-600 mb-4 line-clamp-2">
+
+            <!-- Content Section -->
+            <div class="relative bg-white p-6">
+              <!-- Project Name with Arrow -->
+              <div class="flex items-center justify-between group-hover:gap-3 transition-all duration-300">
+                <h3 class="text-xl font-bold text-gray-900 flex-1 group-hover:text-blue-600 transition-colors duration-300">
+                  {{ project.name }}
+                </h3>
+                <div class="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Short Description -->
+              <p v-if="project.short_description || project.description" class="text-gray-600 text-sm mt-3 line-clamp-2">
                 {{ project.short_description || project.description }}
               </p>
-              <div class="flex items-center justify-between text-sm text-gray-500">
-                <span v-if="project.location">
-                  <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+              <!-- Project Info -->
+              <div class="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100">
+                <div v-if="project.location" class="flex items-center text-xs text-gray-500">
+                  <svg class="w-4 h-4 mr-1.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                   </svg>
-                  {{ project.location }}
-                </span>
-                <span v-if="project.area">{{ formatArea(parseFloat(project.area || 0)) }} m²</span>
+                  <span class="truncate max-w-[120px]">{{ project.location }}</span>
+                </div>
+                <div v-if="project.area" class="flex items-center text-xs text-gray-500">
+                  <svg class="w-4 h-4 mr-1.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                  <span>{{ formatArea(parseFloat(project.area || 0)) }} m²</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="text-center mt-12">
+
+        <!-- View All Button -->
+        <div class="text-center">
           <NuxtLink
             to="/home/projects"
-            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
+            class="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl"
           >
             Xem Tất Cả Dự Án
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -564,3 +600,4 @@ function formatArea(area: number | string) {
   overflow: hidden;
 }
 </style>
+
