@@ -161,6 +161,46 @@ export const publicEndpoints = {
   reviews: {
     getByComic: (comicId: Id) => `/api/public/reviews/comics/${comicId}`,
   },
+  // Company Introduction Public APIs
+  projects: {
+    list: '/api/projects',
+    featured: '/api/projects/featured',
+    showBySlug: (slug: string) => `/api/projects/${slug}`,
+  },
+  aboutSections: {
+    list: '/api/about-sections',
+    showBySlug: (slug: string) => `/api/about-sections/${slug}`,
+    getByType: (type: string) => `/api/about-sections/type/${type}`,
+  },
+  staff: {
+    list: '/api/staff',
+    show: (id: Id) => `/api/staff/${id}`,
+    getByDepartment: (department: string) => `/api/staff/department/${department}`,
+  },
+  testimonials: {
+    list: '/api/testimonials',
+    featured: '/api/testimonials/featured',
+    getByProject: (projectId: Id) => `/api/testimonials/project/${projectId}`,
+  },
+  partners: {
+    list: '/api/partners',
+    getByType: (type: string) => `/api/partners/type/${type}`,
+  },
+  gallery: {
+    list: '/api/gallery',
+    featured: '/api/gallery/featured',
+    showBySlug: (slug: string) => `/api/gallery/${slug}`,
+  },
+  certificates: {
+    list: '/api/certificates',
+    getByType: (type: string) => `/api/certificates/type/${type}`,
+  },
+  faqs: {
+    list: '/api/faqs',
+    popular: '/api/faqs/popular',
+    show: (id: Id) => `/api/faqs/${id}`,
+    markHelpful: (id: Id) => `/api/faqs/${id}/helpful`,
+  },
 } as const
 
 // User endpoints (require authentication)

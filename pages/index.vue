@@ -1,328 +1,322 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <!-- Featured Comics Slider -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-bold text-gray-900">Truyện nổi bật</h2>
-          <div class="flex items-center space-x-2">
-            <span class="text-sm text-gray-600">{{ currentFeaturedIndex + 1 }} / {{ featuredComics.length }}</span>
-            <button
-              @click="prevFeatured"
-              :disabled="currentFeaturedIndex === 0"
-              class="p-2 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              type="button"
-              aria-label="Truyện nổi bật trước"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-            <button
-              @click="nextFeatured"
-              :disabled="currentFeaturedIndex === featuredComics.length - 1"
-              class="p-2 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              type="button"
-              aria-label="Truyện nổi bật tiếp theo"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div v-if="loading" class="bg-white rounded-lg shadow-md p-6 animate-pulse">
-          <div class="flex space-x-6">
-            <div class="w-32 h-48 bg-gray-200 rounded"></div>
-            <div class="flex-1">
-              <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-              <div class="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div class="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
-              <div class="flex flex-wrap gap-2 mb-4">
-                <div class="h-6 bg-gray-200 rounded w-20"></div>
-                <div class="h-6 bg-gray-200 rounded w-20"></div>
-              </div>
-              <div class="h-4 bg-gray-200 rounded w-2/3"></div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="featuredComics.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div
-            v-for="(comic, index) in featuredComics"
-            :key="comic.id"
-            v-show="index === currentFeaturedIndex"
-            class="flex flex-col md:flex-row cursor-pointer hover:bg-gray-50 transition-colors"
-            @click="goToComic(comic.slug)"
-          >
-            <div class="md:w-48 flex-shrink-0">
-              <div class="w-full h-64 md:h-full overflow-hidden">
-                <img
-                  :src="comic.cover_image || '/default.svg'"
-                  :alt="comic.title"
-                  :fetchpriority="index === currentFeaturedIndex ? 'high' : 'auto'"
-                  :loading="index === currentFeaturedIndex ? 'eager' : 'lazy'"
-                  width="320"
-                  height="480"
-                  class="w-full h-full object-cover"
-                  @error="handleImageError"
-                />
-              </div>
-            </div>
-            <div class="flex-1 p-6">
-              <h3 class="text-xl font-bold text-gray-900 mb-3">{{ comic.title }}</h3>
-              <p class="text-gray-600 mb-4 line-clamp-3">{{ comic.description }}</p>
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span
-                  v-for="category in (comic.categories || []).slice(0, 5)"
-                  :key="category.id"
-                  class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                >
-                  {{ category.name }}
-                </span>
-              </div>
-              <!-- Last Chapter -->
-              <div v-if="comic.last_chapter" class="mb-4">
-                <NuxtLink
-                  :to="`/home/comics/${comic.slug}/chapters/${comic.last_chapter.id}`"
-                  class="text-blue-600 hover:text-blue-700 font-medium text-sm block"
-                  @click.stop
-                >
-                  {{ comic.last_chapter.title || `Chương ${comic.last_chapter.chapter_index}` }}
-                </NuxtLink>
-                <span v-if="comic.last_chapter.created_at" class="text-xs text-gray-500">
-                  {{ formatDate(comic.last_chapter.created_at) }}
-                </span>
-              </div>
-              <div class="flex items-center space-x-4 text-sm text-gray-500">
-                <span v-if="comic.author">{{ comic.author }}</span>
-                <span>{{ formatNumber(comic.stats?.view_count || 0) }} lượt xem</span>
-                <span>{{ comic.stats?.chapter_count || 0 }} chương</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Filter Buttons -->
-      <section class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">Phân loại</h2>
-          <NuxtLink
-            to="/home/comics"
-            class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            Tìm kiếm nâng cao
-          </NuxtLink>
-        </div>
-        <div class="flex flex-wrap gap-2 min-h-[44px]">
-          <template v-if="loading">
-            <div
-              v-for="i in 4"
-              :key="i"
-              class="h-9 w-20 bg-gray-200 rounded-full animate-pulse"
-            ></div>
-          </template>
-          <template v-else>
-            <button
-              v-for="category in categories.slice(0, 8)"
-              :key="category.id"
-              @click="filterByCategory(category.id)"
-              class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors"
-            >
-              {{ category.name }}
-            </button>
+  <div class="homepage">
+    <!-- Hero Section -->
+    <section class="hero-section relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white">
+      <div class="absolute inset-0 bg-black/20"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+        <div class="text-center">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+            {{ heroData.title || 'Xây Dựng Tương Lai Bền Vững' }}
+          </h1>
+          <p class="text-xl sm:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+            {{ heroData.subtitle || 'Chuyên nghiệp - Chất lượng - Uy tín' }}
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink
-              to="/home/comics"
-              class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors"
+              to="/projects"
+              class="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition-all transform hover:scale-105"
             >
-              Xem thêm
+              Xem Dự Án
             </NuxtLink>
-          </template>
+            <NuxtLink
+              to="/contact"
+              class="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105"
+            >
+              Liên Hệ Ngay
+            </NuxtLink>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Comics Grid -->
-      <section class="mb-8">
-        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div v-for="i in 12" :key="i" class="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-            <div class="aspect-[3/4] bg-gray-200"></div>
-            <div class="p-3">
-              <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+    <!-- About Section -->
+    <section v-if="aboutSections.length > 0" class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Về Chúng Tôi</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Với nhiều năm kinh nghiệm, chúng tôi tự hào là đối tác tin cậy trong lĩnh vực xây dựng
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            v-for="section in aboutSections.slice(0, 3)"
+            :key="section.id"
+            class="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition-shadow"
+          >
+            <div v-if="section.image" class="mb-4">
+              <img :src="section.image" :alt="section.title" class="w-full h-48 object-cover rounded-lg" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ section.title }}</h3>
+            <div class="text-gray-600 line-clamp-3" v-html="section.content"></div>
+            <NuxtLink
+              v-if="section.slug"
+              :to="`/about/${section.slug}`"
+              class="mt-4 inline-block text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Đọc thêm →
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Projects -->
+    <section v-if="featuredProjects.length > 0" class="py-16 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Dự Án Nổi Bật</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Khám phá những dự án thành công của chúng tôi
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            v-for="project in featuredProjects"
+            :key="project.id"
+            class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow cursor-pointer"
+            @click="goToProject(project.slug)"
+          >
+            <div class="relative h-64 overflow-hidden">
+              <img
+                :src="project.cover_image || '/default.svg'"
+                :alt="project.name"
+                class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+              />
+              <div v-if="project.status" class="absolute top-4 right-4">
+                <span
+                  :class="getStatusClass(project.status)"
+                  class="px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  {{ getStatusLabel(project.status) }}
+                </span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ project.name }}</h3>
+              <p class="text-gray-600 mb-4 line-clamp-2">{{ project.short_description }}</p>
+              <div class="flex items-center justify-between text-sm text-gray-500">
+                <span v-if="project.location">
+                  <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  {{ project.location }}
+                </span>
+                <span v-if="project.area">{{ formatArea(project.area) }} m²</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div v-else-if="trendingComics.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <ComicCard
-            v-for="comic in trendingComics.slice(0, 12)"
-            :key="comic.id"
-            :comic="comic"
-          />
-        </div>
-      </section>
-
-      <!-- Latest Updates -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">Mới Cập Nhật</h2>
+        <div class="text-center mt-12">
           <NuxtLink
-            to="/home/comics?sort_by=updated_at&sort_order=DESC"
-            class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+            to="/projects"
+            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
           >
-            Xem tất cả
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            Xem Tất Cả Dự Án
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </NuxtLink>
         </div>
+      </div>
+    </section>
 
-        <div v-if="loading" class="bg-white rounded-lg shadow-md p-4 space-y-3">
-          <div v-for="i in 10" :key="i" class="flex items-center space-x-4 animate-pulse">
-            <div class="w-16 h-24 bg-gray-200 rounded flex-shrink-0"></div>
-            <div class="flex-1">
-              <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div class="h-4 bg-gray-200 rounded w-1/2 mb-1"></div>
-              <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+    <!-- Services Section -->
+    <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Dịch Vụ Của Chúng Tôi</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Cung cấp giải pháp xây dựng toàn diện
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            v-for="service in services"
+            :key="service.id"
+            class="text-center p-6 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            <div class="text-5xl mb-4">{{ service.icon }}</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ service.name }}</h3>
+            <p class="text-gray-600">{{ service.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section v-if="featuredTestimonials.length > 0" class="py-16 bg-gradient-to-br from-blue-50 to-purple-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Khách Hàng Nói Gì</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Những phản hồi từ khách hàng đã tin tưởng chúng tôi
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            v-for="testimonial in featuredTestimonials"
+            :key="testimonial.id"
+            class="bg-white rounded-lg p-6 shadow-md"
+          >
+            <div class="flex items-center mb-4">
+              <div v-for="i in 5" :key="i" class="text-yellow-400">
+                <svg v-if="i <= (testimonial.rating || 5)" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"></path>
+                </svg>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-4 line-clamp-4">{{ testimonial.content }}</p>
+            <div class="flex items-center">
+              <img
+                v-if="testimonial.client_avatar"
+                :src="testimonial.client_avatar"
+                :alt="testimonial.client_name"
+                class="w-12 h-12 rounded-full mr-3"
+              />
+              <div>
+                <p class="font-semibold text-gray-900">{{ testimonial.client_name }}</p>
+                <p class="text-sm text-gray-600">{{ testimonial.client_position }}{{ testimonial.client_company ? ` - ${testimonial.client_company}` : '' }}</p>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div v-else-if="recentUpdateComics.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- Partners Section -->
+    <section v-if="partners.length > 0" class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Đối Tác Của Chúng Tôi</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Được tin tưởng bởi nhiều đối tác uy tín
+          </p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
           <div
-            v-for="comic in recentUpdateComics.slice(0, 10)"
-            :key="comic.id"
-            class="flex items-center space-x-4 p-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 cursor-pointer group"
-            @click="goToComic(comic.slug)"
+            v-for="partner in partners"
+            :key="partner.id"
+            class="flex items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors"
           >
             <img
-              :src="comic.cover_image || '/default.svg'"
-              :alt="comic.title"
-              loading="lazy"
-              decoding="async"
-              class="w-16 h-24 object-cover rounded flex-shrink-0"
-              @error="handleImageError"
+              v-if="partner.logo"
+              :src="partner.logo"
+              :alt="partner.name"
+              class="max-h-16 max-w-full object-contain"
             />
-            <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-gray-900 mb-1 truncate group-hover:text-blue-600 transition-colors">
-                {{ comic.title }}
-              </h3>
-              <NuxtLink
-                v-if="comic.last_chapter"
-                :to="`/home/comics/${comic.slug}/chapters/${comic.last_chapter.id}`"
-                class="text-blue-600 hover:text-blue-700 font-medium text-sm block mb-1"
-                @click.stop
+            <span v-else class="text-gray-600 font-medium">{{ partner.name }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certificates Section -->
+    <section v-if="certificates.length > 0" class="py-16 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Chứng Nhận & Giấy Phép</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Cam kết chất lượng và tuân thủ các tiêu chuẩn quốc tế
+          </p>
+        </div>
+        <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div
+            v-for="cert in certificates"
+            :key="cert.id"
+            class="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+            @click="openCertificateModal(cert)"
+          >
+            <img
+              :src="cert.image"
+              :alt="cert.name"
+              class="w-full h-48 object-contain mb-4"
+            />
+            <h3 class="font-semibold text-gray-900 mb-1">{{ cert.name }}</h3>
+            <p class="text-sm text-gray-600">{{ cert.issued_by }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section v-if="popularFaqs.length > 0" class="py-16 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Câu Hỏi Thường Gặp</h2>
+          <p class="text-lg text-gray-600">
+            Giải đáp những thắc mắc phổ biến
+          </p>
+        </div>
+        <div class="space-y-4">
+          <div
+            v-for="faq in popularFaqs"
+            :key="faq.id"
+            class="border border-gray-200 rounded-lg overflow-hidden"
+          >
+            <button
+              @click="toggleFaq(faq.id)"
+              class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <span class="font-semibold text-gray-900">{{ faq.question }}</span>
+              <svg
+                class="w-5 h-5 text-gray-500 transition-transform"
+                :class="{ 'rotate-180': expandedFaqs.includes(faq.id) }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {{ comic.last_chapter.title || `Chương ${comic.last_chapter.chapter_index}` }}
-              </NuxtLink>
-              <div class="flex items-center space-x-3 text-xs text-gray-500">
-                <span v-if="comic.last_chapter?.created_at">{{ formatDate(comic.last_chapter.created_at) }}</span>
-                <span v-if="comic.author">{{ comic.author }}</span>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2 text-sm text-gray-600">
-              <span class="flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-                {{ formatNumber(comic.stats?.view_count || 0) }}
-              </span>
-              <span class="flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                {{ comic.stats?.chapter_count || 0 }}
-              </span>
-            </div>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div
+              v-show="expandedFaqs.includes(faq.id)"
+              class="px-6 py-4 bg-gray-50 text-gray-700"
+              v-html="faq.answer"
+            ></div>
           </div>
         </div>
-      </section>
-
-      <!-- Popular Comics -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">Truyện Hot</h2>
+        <div class="text-center mt-8">
           <NuxtLink
-            to="/home/comics?sort_by=view_count&sort_order=DESC"
-            class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+            to="/faqs"
+            class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
           >
-            Xem tất cả
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            Xem Tất Cả Câu Hỏi
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </NuxtLink>
         </div>
+      </div>
+    </section>
 
-        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div v-for="i in 12" :key="i" class="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-            <div class="aspect-[3/4] bg-gray-200"></div>
-            <div class="p-3">
-              <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="popularComics.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <ComicCard
-            v-for="comic in popularComics.slice(0, 12)"
-            :key="comic.id"
-            :comic="comic"
-          />
-        </div>
-      </section>
-
-      <!-- Newest Comics -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">Truyện Mới</h2>
-          <NuxtLink
-            to="/home/comics?sort_by=created_at&sort_order=DESC"
-            class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
-          >
-            Xem tất cả
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </NuxtLink>
-        </div>
-
-        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div v-for="i in 12" :key="i" class="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-            <div class="aspect-[3/4] bg-gray-200"></div>
-            <div class="p-3">
-              <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="newestComics.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <ComicCard
-            v-for="comic in newestComics.slice(0, 12)"
-            :key="comic.id"
-            :comic="comic"
-          />
-        </div>
-      </section>
-    </div>
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Sẵn Sàng Bắt Đầu Dự Án Của Bạn?</h2>
+        <p class="text-xl mb-8 text-blue-100">
+          Liên hệ với chúng tôi ngay hôm nay để được tư vấn miễn phí
+        </p>
+        <NuxtLink
+          to="/contact"
+          class="inline-flex items-center px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition-all transform hover:scale-105"
+        >
+          Liên Hệ Ngay
+        </NuxtLink>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGlobalApiClient } from '@/composables/api'
 import { publicEndpoints } from '@/api/endpoints'
 import { useSeo } from '@/composables/seo'
 import { useGlobalSystemConfig } from '~/composables/system-config'
-import ComicCard from '@/components/Public/Comics/ComicCard.vue'
+import { getProjectStatusLabel, getProjectStatusColor } from '@/shared/enums'
 
 definePageMeta({
   layout: 'home'
@@ -334,125 +328,169 @@ const { systemInfo } = useGlobalSystemConfig()
 
 // SEO
 useSeo({
-  title: systemInfo.value?.name || 'Đọc Truyện Tranh Online',
-  description: 'Khám phá hàng ngàn truyện tranh hay nhất, mới nhất. Đọc truyện tranh online miễn phí.',
+  title: systemInfo.value?.name || 'Công Ty Xây Dựng',
+  description: 'Chuyên nghiệp - Chất lượng - Uy tín. Dịch vụ xây dựng toàn diện với nhiều năm kinh nghiệm.',
   type: 'website',
-  url: '/home'
+  url: '/'
 })
 
 // State
-const featuredComics = ref<any[]>([]) // top_viewed_comics
-const trendingComics = ref<any[]>([])
-const popularComics = ref<any[]>([])
-const newestComics = ref<any[]>([])
-const recentUpdateComics = ref<any[]>([]) // Comics có chapter mới cập nhật
-const categories = ref<any[]>([])
-const currentFeaturedIndex = ref(0)
-
-// Loading state - chỉ cần một loading state cho tất cả
+const heroData = ref({ title: '', subtitle: '' })
+const featuredProjects = ref<any[]>([])
+const aboutSections = ref<any[]>([])
+const featuredTestimonials = ref<any[]>([])
+const partners = ref<any[]>([])
+const certificates = ref<any[]>([])
+const popularFaqs = ref<any[]>([])
+const expandedFaqs = ref<(string | number)[]>([])
 const loading = ref(true)
 
-/**
- * Load tất cả dữ liệu từ một API duy nhất bằng useAsyncData để:
- * - SSR sẵn dữ liệu, giảm thời gian render LCP
- * - Hạn chế fetch lại trên client khi hydration
- */
-const { data: homepageData, error: homepageError } = await useAsyncData(
-  'homepage-data',
-  async () => {
-    const response = await apiClient.get(publicEndpoints.homepage)
+// Services data (hardcoded - có thể chuyển sang API sau)
+const services = ref([
+  { id: 1, name: 'Xây Dựng Dân Dụng', icon: '🏗️', description: 'Nhà ở, biệt thự, chung cư' },
+  { id: 2, name: 'Xây Dựng Công Nghiệp', icon: '🏭', description: 'Nhà xưởng, kho bãi, khu công nghiệp' },
+  { id: 3, name: 'Thiết Kế Kiến Trúc', icon: '📐', description: 'Thiết kế chuyên nghiệp, hiện đại' },
+  { id: 4, name: 'Nội Thất & Hoàn Thiện', icon: '🪑', description: 'Thi công nội thất, hoàn thiện công trình' }
+])
 
-    if (response.data?.success) {
-      return response.data.data
+// Load data
+onMounted(async () => {
+  await Promise.all([
+    loadFeaturedProjects(),
+    loadAboutSections(),
+    loadFeaturedTestimonials(),
+    loadPartners(),
+    loadCertificates(),
+    loadPopularFaqs()
+  ])
+  loading.value = false
+})
+
+async function loadFeaturedProjects() {
+  try {
+    const response = await apiClient.get(publicEndpoints.projects.featured, { params: { limit: 6 } })
+    if (response.data?.data) {
+      featuredProjects.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
     }
-
-    return null
-  }
-)
-
-if (homepageData.value) {
-  const data = homepageData.value as any
-
-  // Comics data - Structure mới: flat, không nested
-  featuredComics.value = data.top_viewed_comics || []
-  trendingComics.value = data.trending_comics || []
-  popularComics.value = data.popular_comics || []
-  newestComics.value = data.newest_comics || []
-  recentUpdateComics.value = data.recent_update_comics || []
-
-  // Categories data
-  categories.value = data.comic_categories || []
-}
-
-if (homepageError.value) {
-  // Đảm bảo UI không bị kẹt ở trạng thái loading nếu lỗi
-  console.error('Failed to load homepage data:', homepageError.value)
-}
-
-loading.value = !homepageData.value && !homepageError.value
-
-function prevFeatured() {
-  if (currentFeaturedIndex.value > 0) {
-    currentFeaturedIndex.value--
+  } catch (error) {
+    console.error('Failed to load featured projects:', error)
   }
 }
 
-function nextFeatured() {
-  if (currentFeaturedIndex.value < featuredComics.value.length - 1) {
-    currentFeaturedIndex.value++
+async function loadAboutSections() {
+  try {
+    const response = await apiClient.get(publicEndpoints.aboutSections.list, { params: { limit: 3, status: 'active' } })
+    if (response.data?.data) {
+      aboutSections.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load about sections:', error)
   }
 }
 
-function filterByCategory(categoryId: number) {
-  router.push({
-    path: '/home/comics',
-    query: { category: categoryId }
-  })
-}
-
-function goToComic(slug: string) {
-  router.push(`/home/comics/${slug}`)
-}
-
-// Function này không còn cần thiết vì đã chuyển sang hiển thị comics thay vì chapters
-
-function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M'
+async function loadFeaturedTestimonials() {
+  try {
+    const response = await apiClient.get(publicEndpoints.testimonials.featured, { params: { limit: 6 } })
+    if (response.data?.data) {
+      featuredTestimonials.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load featured testimonials:', error)
   }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K'
+}
+
+async function loadPartners() {
+  try {
+    const response = await apiClient.get(publicEndpoints.partners.list, { params: { limit: 12, status: 'active' } })
+    if (response.data?.data) {
+      partners.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load partners:', error)
   }
-  return num.toString()
 }
 
-function formatDate(dateString: string): string {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-
-  if (minutes < 1) return 'Vừa xong'
-  if (minutes < 60) return `${minutes} phút trước`
-  if (hours < 24) return `${hours} giờ trước`
-  if (days < 7) return `${days} ngày trước`
-  return date.toLocaleDateString('vi-VN')
+async function loadCertificates() {
+  try {
+    const response = await apiClient.get(publicEndpoints.certificates.list, { params: { limit: 8, status: 'active' } })
+    if (response.data?.data) {
+      certificates.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load certificates:', error)
+  }
 }
 
-function handleImageError(event: Event) {
-  const img = event.target as HTMLImageElement
-  img.src = '/default.svg'
+async function loadPopularFaqs() {
+  try {
+    const response = await apiClient.get(publicEndpoints.faqs.popular, { params: { limit: 5 } })
+    if (response.data?.data) {
+      popularFaqs.value = Array.isArray(response.data.data) ? response.data.data : response.data.data.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load popular FAQs:', error)
+  }
+}
+
+function goToProject(slug: string) {
+  router.push(`/projects/${slug}`)
+}
+
+function toggleFaq(id: string | number) {
+  const index = expandedFaqs.value.indexOf(id)
+  if (index >= 0) {
+    expandedFaqs.value.splice(index, 1)
+  } else {
+    expandedFaqs.value.push(id)
+  }
+}
+
+function openCertificateModal(cert: any) {
+  // TODO: Implement certificate modal
+  console.log('Open certificate:', cert)
+}
+
+function getStatusLabel(status: string) {
+  return getProjectStatusLabel(status as any) || status
+}
+
+function getStatusClass(status: string) {
+  const color = getProjectStatusColor(status as any)
+  const colorMap: Record<string, string> = {
+    blue: 'bg-blue-100 text-blue-800',
+    yellow: 'bg-yellow-100 text-yellow-800',
+    green: 'bg-green-100 text-green-800',
+    red: 'bg-red-100 text-red-800'
+  }
+  return colorMap[color] || 'bg-gray-100 text-gray-800'
+}
+
+function formatArea(area: number) {
+  return new Intl.NumberFormat('vi-VN').format(area)
 }
 </script>
 
 <style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

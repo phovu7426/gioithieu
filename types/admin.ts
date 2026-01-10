@@ -392,6 +392,67 @@ export const adminEndpoints = {
     uploadPages: (id: Id) => `/api/admin/chapters/${id}/pages`,
     updatePages: (id: Id) => `/api/admin/chapters/${id}/pages`,
   },
+  // Company Introduction APIs
+  projects: {
+    list: '/api/admin/projects',
+    create: '/api/admin/projects',
+    show: (id: Id) => `/api/admin/projects/${id}`,
+    update: (id: Id) => `/api/admin/projects/${id}`,
+    delete: (id: Id) => `/api/admin/projects/${id}`,
+    updateStatus: (id: Id) => `/api/admin/projects/${id}/status`,
+    toggleFeatured: (id: Id) => `/api/admin/projects/${id}/featured`,
+    updateSortOrder: (id: Id) => `/api/admin/projects/${id}/sort-order`,
+  },
+  aboutSections: {
+    list: '/api/admin/about-sections',
+    create: '/api/admin/about-sections',
+    show: (id: Id) => `/api/admin/about-sections/${id}`,
+    update: (id: Id) => `/api/admin/about-sections/${id}`,
+    delete: (id: Id) => `/api/admin/about-sections/${id}`,
+  },
+  staff: {
+    list: '/api/admin/staff',
+    create: '/api/admin/staff',
+    show: (id: Id) => `/api/admin/staff/${id}`,
+    update: (id: Id) => `/api/admin/staff/${id}`,
+    delete: (id: Id) => `/api/admin/staff/${id}`,
+  },
+  testimonials: {
+    list: '/api/admin/testimonials',
+    create: '/api/admin/testimonials',
+    show: (id: Id) => `/api/admin/testimonials/${id}`,
+    update: (id: Id) => `/api/admin/testimonials/${id}`,
+    delete: (id: Id) => `/api/admin/testimonials/${id}`,
+    toggleFeatured: (id: Id) => `/api/admin/testimonials/${id}/featured`,
+  },
+  partners: {
+    list: '/api/admin/partners',
+    create: '/api/admin/partners',
+    show: (id: Id) => `/api/admin/partners/${id}`,
+    update: (id: Id) => `/api/admin/partners/${id}`,
+    delete: (id: Id) => `/api/admin/partners/${id}`,
+  },
+  gallery: {
+    list: '/api/admin/gallery',
+    create: '/api/admin/gallery',
+    show: (id: Id) => `/api/admin/gallery/${id}`,
+    update: (id: Id) => `/api/admin/gallery/${id}`,
+    delete: (id: Id) => `/api/admin/gallery/${id}`,
+  },
+  certificates: {
+    list: '/api/admin/certificates',
+    create: '/api/admin/certificates',
+    show: (id: Id) => `/api/admin/certificates/${id}`,
+    update: (id: Id) => `/api/admin/certificates/${id}`,
+    delete: (id: Id) => `/api/admin/certificates/${id}`,
+  },
+  faqs: {
+    list: '/api/admin/faqs',
+    create: '/api/admin/faqs',
+    show: (id: Id) => `/api/admin/faqs/${id}`,
+    update: (id: Id) => `/api/admin/faqs/${id}`,
+    delete: (id: Id) => `/api/admin/faqs/${id}`,
+  },
   // Note: rbac.syncRoles endpoint không tồn tại trong API
   // Sử dụng users.assignRoles (PUT /api/admin/users/:id/roles) với X-Group-Id header thay thế
 } as const

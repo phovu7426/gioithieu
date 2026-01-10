@@ -21,36 +21,63 @@ export function useUserNavigation(): UserNavigationResult {
       status: 'active'
     },
     {
-      name: 'Truyện tranh',
-      path: '/home/comics',
-      api: 'api/comics',
-      icon: '📚',
-      status: 'active'
-    },
-    {
-      name: 'Thể loại',
-      path: '/home/comics',
-      api: 'api/comic-categories',
-      icon: '🏷️',
-      status: 'active'
-    },
-    {
-      name: 'Tin tức',
-      path: '/home/posts',
-      api: 'api/posts',
-      icon: '📰',
-      status: 'active'
-    },
-    {
       name: 'Giới thiệu',
-      path: '/home/about',
-      api: 'api/about',
+      path: '/about',
+      api: 'api/about-sections',
       icon: 'ℹ️',
+      status: 'active',
+      children: [
+        {
+          name: 'Về chúng tôi',
+          path: '/about',
+          icon: '🏢',
+          status: 'active'
+        },
+        {
+          name: 'Đội ngũ',
+          path: '/staff',
+          icon: '👥',
+          status: 'active'
+        },
+        {
+          name: 'Chứng chỉ',
+          path: '/certificates',
+          icon: '🏆',
+          status: 'active'
+        }
+      ]
+    },
+    {
+      name: 'Dự án',
+      path: '/projects',
+      api: 'api/projects',
+      icon: '🏗️',
+      status: 'active'
+    },
+    {
+      name: 'Dịch vụ',
+      path: '/services',
+      api: '',
+      icon: '🛠️',
+      status: 'active'
+    },
+    {
+      name: 'Thư viện',
+      path: '/gallery',
+      api: 'api/gallery',
+      icon: '📸',
+      status: 'active'
+    },
+    {
+      name: 'FAQ',
+      path: '/faqs',
+      api: 'api/faqs',
+      icon: '❓',
       status: 'active'
     },
     {
       name: 'Liên hệ',
-      path: '/home/contact',
+      path: '/contact',
       api: 'api/contact',
       icon: '📞',
       status: 'active'

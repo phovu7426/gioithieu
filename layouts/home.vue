@@ -32,7 +32,7 @@
               to="/"
               class="text-base sm:text-xl md:text-2xl font-bold text-gray-900 hover:text-blue-700 transition-colors block truncate min-w-0"
             >
-              {{ systemInfo.name || 'E-Commerce Platform' }}
+              {{ systemInfo.name || 'Công Ty Xây Dựng' }}
             </NuxtLink>
           </div>
           
@@ -41,7 +41,7 @@
             <div class="relative w-full">
               <input 
                 type="text" 
-                placeholder="Tìm kiếm truyện tranh..." 
+                placeholder="Tìm kiếm dự án, dịch vụ..." 
                 class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,7 +186,7 @@
                 class="font-semibold text-gray-900 truncate"
                 @click="closeMobileMenu"
               >
-                {{ systemInfo.name || 'E-Commerce Platform' }}
+                {{ systemInfo.name || 'Công Ty Xây Dựng' }}
               </NuxtLink>
             </div>
             <button
@@ -208,7 +208,7 @@
               <input
                 v-model="mobileSearch"
                 type="text"
-                placeholder="Tìm kiếm truyện tranh..."
+                placeholder="Tìm kiếm dự án, dịch vụ..."
                 class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -323,26 +323,26 @@
                 </svg>
               </div>
               <img v-else :src="siteLogo" :alt="systemInfo.name || 'Logo'" class="h-10 w-auto object-contain mr-3" />
-              <h3 class="text-lg font-semibold">{{ systemInfo.name || 'E-Commerce Platform' }}</h3>
+              <h3 class="text-lg font-semibold">{{ systemInfo.name || 'Công Ty Xây Dựng' }}</h3>
             </div>
             <p class="text-gray-400 mb-4">{{ siteDescription }}</p>
           </div>
           <div>
-            <h4 class="text-lg font-semibold mb-4">Truyện tranh</h4>
+            <h4 class="text-lg font-semibold mb-4">Dự án & Dịch vụ</h4>
             <ul class="space-y-2 text-gray-400">
-              <li><NuxtLink to="/home/comics" class="hover:text-white transition-colors">Danh sách truyện</NuxtLink></li>
-              <li><NuxtLink to="/home/comics?sort_by=view_count&sort_order=DESC" class="hover:text-white transition-colors">Truyện hot</NuxtLink></li>
-              <li><NuxtLink to="/home/comics?sort_by=created_at&sort_order=DESC" class="hover:text-white transition-colors">Truyện mới</NuxtLink></li>
-              <li><NuxtLink to="/home/comics?sort_by=follow_count&sort_order=DESC" class="hover:text-white transition-colors">Truyện phổ biến</NuxtLink></li>
+              <li><NuxtLink to="/projects" class="hover:text-white transition-colors">Dự án nổi bật</NuxtLink></li>
+              <li><NuxtLink to="/services" class="hover:text-white transition-colors">Dịch vụ</NuxtLink></li>
+              <li><NuxtLink to="/gallery" class="hover:text-white transition-colors">Thư viện ảnh</NuxtLink></li>
+              <li><NuxtLink to="/certificates" class="hover:text-white transition-colors">Chứng chỉ</NuxtLink></li>
             </ul>
           </div>
           <div>
             <h4 class="text-lg font-semibold mb-4">Hỗ trợ</h4>
             <ul class="space-y-2 text-gray-400">
-              <li><a href="#" class="hover:text-white transition-colors">Hướng dẫn sử dụng</a></li>
-              <li><a href="#" class="hover:text-white transition-colors">Liên hệ hỗ trợ</a></li>
-              <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
-              <li><a href="#" class="hover:text-white transition-colors">Tài liệu API</a></li>
+              <li><NuxtLink to="/about" class="hover:text-white transition-colors">Về chúng tôi</NuxtLink></li>
+              <li><NuxtLink to="/staff" class="hover:text-white transition-colors">Đội ngũ</NuxtLink></li>
+              <li><NuxtLink to="/faqs" class="hover:text-white transition-colors">Câu hỏi thường gặp</NuxtLink></li>
+              <li><NuxtLink to="/contact" class="hover:text-white transition-colors">Liên hệ</NuxtLink></li>
             </ul>
           </div>
           <div>
@@ -365,7 +365,7 @@
         </div>
         <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
           <p v-if="siteCopyright">{{ siteCopyright }}</p>
-          <p v-else>&copy; {{ currentYear }} {{ systemInfo.name || 'E-Commerce Platform' }}. All rights reserved.</p>
+          <p v-else>&copy; {{ currentYear }} {{ systemInfo.name || 'Công Ty Xây Dựng' }}. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -401,7 +401,7 @@ const { systemInfo, data: systemConfig, getConfigValue } = useGlobalSystemConfig
 const siteLogo = computed(() => getConfigValue('site_logo') || null)
 const siteFavicon = computed(() => getConfigValue('site_favicon') || null)
 const siteCopyright = computed(() => getConfigValue('site_copyright') || null)
-const siteDescription = computed(() => getConfigValue('site_description') || 'Nền tảng thương mại điện tử hiện đại với đầy đủ tính năng quản lý')
+const siteDescription = computed(() => getConfigValue('site_description') || 'Chuyên nghiệp - Chất lượng - Uy tín. Dịch vụ xây dựng toàn diện với nhiều năm kinh nghiệm.')
 const contactChannels = computed(() => getConfigValue('contact_channels') || null)
 
 // Sử dụng user navigation composable
@@ -416,7 +416,7 @@ const route = useRoute()
 const pageTitle = computed(() => {
   // Chỉ set title cho trang chủ
   if (route.path === '/' || route.path === '/home') {
-    return systemInfo.value.name || 'E-Commerce Platform'
+    return systemInfo.value.name || 'Công Ty Xây Dựng'
   }
   
   // Tất cả các trang khác sẽ tự set title riêng, không override
