@@ -74,67 +74,6 @@
       </div>
     </section>
 
-    <!-- Staff Section -->
-    <section v-if="staff.length > 0" class="py-16 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Đội Ngũ Của Chúng Tôi</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Đội ngũ chuyên nghiệp, giàu kinh nghiệm và tâm huyết
-          </p>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div
-            v-for="member in staff.slice(0, 8)"
-            :key="member.id"
-            class="bg-white rounded-lg p-6 text-center shadow-md hover:shadow-xl transition-shadow"
-          >
-            <div class="mb-4">
-              <img
-                v-if="member.avatar"
-                :src="member.avatar"
-                :alt="member.name"
-                class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-blue-100"
-              />
-              <div v-else class="w-24 h-24 rounded-full mx-auto bg-gray-200 flex items-center justify-center">
-                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-              </div>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ member.name }}</h3>
-            <p class="text-blue-600 font-medium text-sm mb-1">{{ member.position }}</p>
-            <p v-if="member.department" class="text-gray-500 text-xs mb-2">{{ member.department }}</p>
-            <p v-if="member.expertise" class="text-gray-600 text-xs line-clamp-2">{{ member.expertise }}</p>
-            <div v-if="member.social_links && Object.keys(member.social_links).length > 0" class="flex justify-center gap-2 mt-4">
-              <a
-                v-if="member.social_links.facebook"
-                :href="member.social_links.facebook"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-blue-600 hover:text-blue-700"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
-                </svg>
-              </a>
-              <a
-                v-if="member.social_links.linkedin"
-                :href="member.social_links.linkedin"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-blue-600 hover:text-blue-700"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Featured Projects -->
     <section v-if="featuredProjects.length > 0" class="py-16 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -230,120 +169,6 @@
       </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section v-if="featuredTestimonials.length > 0" class="py-16 bg-gradient-to-br from-blue-50 to-purple-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Khách Hàng Nói Gì</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Những phản hồi từ khách hàng đã tin tưởng chúng tôi
-          </p>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div
-            v-for="testimonial in featuredTestimonials"
-            :key="testimonial.id"
-            class="bg-white rounded-lg p-6 shadow-md"
-          >
-            <div v-if="testimonial.rating" class="flex items-center mb-4">
-              <div v-for="i in 5" :key="i" class="text-yellow-400">
-                <svg v-if="i <= (testimonial.rating || 0)" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"></path>
-                </svg>
-                <svg v-else class="w-5 h-5 fill-current text-gray-300" viewBox="0 0 20 20">
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"></path>
-                </svg>
-              </div>
-            </div>
-            <p class="text-gray-700 mb-4 line-clamp-4">{{ testimonial.content }}</p>
-            <div class="flex items-center">
-              <img
-                v-if="testimonial.client_avatar"
-                :src="testimonial.client_avatar"
-                :alt="testimonial.client_name"
-                class="w-12 h-12 rounded-full mr-3 object-cover border-2 border-gray-200"
-              />
-              <div v-else class="w-12 h-12 rounded-full mr-3 bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-              </div>
-              <div class="min-w-0 flex-1">
-                <p class="font-semibold text-gray-900 truncate">{{ testimonial.client_name }}</p>
-                <p v-if="testimonial.client_position || testimonial.client_company" class="text-sm text-gray-600 truncate">
-                  <span v-if="testimonial.client_position">{{ testimonial.client_position }}</span>
-                  <span v-if="testimonial.client_position && testimonial.client_company"> - </span>
-                  <span v-if="testimonial.client_company">{{ testimonial.client_company }}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Gallery Section -->
-    <section v-if="featuredGallery.length > 0" class="py-16 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Thư Viện Ảnh</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Khám phá những hình ảnh đẹp nhất từ các dự án của chúng tôi
-          </p>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            v-for="gallery in featuredGallery"
-            :key="gallery.id"
-            class="bg-gray-50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow cursor-pointer"
-            @click="goToGallery(gallery.slug || gallery.id)"
-          >
-            <div class="relative h-64 overflow-hidden bg-gray-100">
-              <img
-                v-if="gallery.cover_image"
-                :src="gallery.cover_image"
-                :alt="gallery.title"
-                class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-              />
-              <div v-else-if="gallery.images && gallery.images.length > 0" class="w-full h-full">
-                <img
-                  :src="gallery.images[0]"
-                  :alt="gallery.title"
-                  class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                />
-              </div>
-              <div v-else class="w-full h-full flex items-center justify-center bg-gray-200">
-                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-              </div>
-              <div v-if="gallery.featured" class="absolute top-4 left-4 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                Nổi bật
-              </div>
-              <div v-if="gallery.images && gallery.images.length > 0" class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs font-semibold">
-                {{ gallery.images.length }} ảnh
-              </div>
-            </div>
-            <div class="p-6">
-              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ gallery.title }}</h3>
-              <p v-if="gallery.description" class="text-gray-600 line-clamp-2">{{ gallery.description }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="text-center mt-12">
-          <NuxtLink
-            to="/home/gallery"
-            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
-          >
-            Xem Tất Cả Gallery
-            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
-
     <!-- Partners Section -->
     <section v-if="partners.length > 0" class="py-16 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -395,6 +220,89 @@
             <h3 class="font-semibold text-gray-900 mb-1">{{ cert.name }}</h3>
             <p class="text-sm text-gray-600">{{ cert.issued_by }}</p>
           </div>
+        </div>
+        <div class="text-center mt-12">
+          <NuxtLink
+            to="/home/certificates"
+            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
+          >
+            Xem Tất Cả Chứng Chỉ
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Staff Section -->
+    <section v-if="staff.length > 0" class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Đội Ngũ Của Chúng Tôi</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Đội ngũ chuyên nghiệp, giàu kinh nghiệm và tâm huyết
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div
+            v-for="member in staff.slice(0, 8)"
+            :key="member.id"
+            class="bg-gray-50 rounded-lg p-6 text-center shadow-md hover:shadow-xl transition-shadow"
+          >
+            <div class="mb-4">
+              <img
+                v-if="member.avatar"
+                :src="member.avatar"
+                :alt="member.name"
+                class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-blue-100"
+              />
+              <div v-else class="w-24 h-24 rounded-full mx-auto bg-gray-200 flex items-center justify-center">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ member.name }}</h3>
+            <p class="text-blue-600 font-medium text-sm mb-1">{{ member.position }}</p>
+            <p v-if="member.department" class="text-gray-500 text-xs mb-2">{{ member.department }}</p>
+            <p v-if="member.expertise" class="text-gray-600 text-xs line-clamp-2">{{ member.expertise }}</p>
+            <div v-if="member.social_links && Object.keys(member.social_links).length > 0" class="flex justify-center gap-2 mt-4">
+              <a
+                v-if="member.social_links.facebook"
+                :href="member.social_links.facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-600 hover:text-blue-700"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+                </svg>
+              </a>
+              <a
+                v-if="member.social_links.linkedin"
+                :href="member.social_links.linkedin"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-600 hover:text-blue-700"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-12">
+          <NuxtLink
+            to="/home/staff"
+            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
+          >
+            Xem Tất Cả Đội Ngũ
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -499,9 +407,7 @@ useSeo({
 const featuredProjects = ref<any[]>([])
 const aboutSections = ref<any[]>([])
 const staff = ref<any[]>([])
-const featuredTestimonials = ref<any[]>([])
 const partners = ref<any[]>([])
-const featuredGallery = ref<any[]>([])
 const certificates = ref<any[]>([])
 const popularFaqs = ref<any[]>([])
 const expandedFaqs = ref<(string | number)[]>([])
@@ -535,9 +441,7 @@ async function loadHomepageData() {
       featuredProjects.value = Array.isArray(data.featured_projects) ? data.featured_projects : []
       aboutSections.value = Array.isArray(data.about_sections) ? data.about_sections : []
       staff.value = Array.isArray(data.staff) ? data.staff : []
-      featuredTestimonials.value = Array.isArray(data.featured_testimonials) ? data.featured_testimonials : []
       partners.value = Array.isArray(data.partners) ? data.partners : []
-      featuredGallery.value = Array.isArray(data.featured_gallery) ? data.featured_gallery : []
       certificates.value = Array.isArray(data.certificates) ? data.certificates : []
       popularFaqs.value = Array.isArray(data.popular_faqs) ? data.popular_faqs : []
       
@@ -574,22 +478,6 @@ async function loadHomepageData() {
         }
       })
       
-      featuredGallery.value = featuredGallery.value.map(gallery => {
-        let images = gallery.images || []
-        if (typeof images === 'string') {
-          try {
-            images = JSON.parse(images)
-          } catch (e) {
-            console.warn('Failed to parse gallery images:', e)
-            images = []
-          }
-        }
-        return {
-          ...gallery,
-          images: Array.isArray(images) ? images : []
-        }
-      })
-      
     } else {
       error.value = 'Không thể tải dữ liệu trang chủ'
       console.error('Invalid response format:', response.data)
@@ -602,9 +490,7 @@ async function loadHomepageData() {
     featuredProjects.value = []
     aboutSections.value = []
     staff.value = []
-    featuredTestimonials.value = []
     partners.value = []
-    featuredGallery.value = []
     certificates.value = []
     popularFaqs.value = []
   } finally {
@@ -615,11 +501,6 @@ async function loadHomepageData() {
 function goToProject(slugOrId: string | number) {
   if (!slugOrId) return
   router.push(`/home/projects/${slugOrId}`)
-}
-
-function goToGallery(slugOrId: string | number) {
-  if (!slugOrId) return
-  router.push(`/home/gallery/${slugOrId}`)
 }
 
 function toggleFaq(id: string | number) {
